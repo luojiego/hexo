@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Roger的Golang日常</title>
+  
+  <subtitle>动机至善 私心了无</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://luojiego.com/"/>
+  <updated>2020-04-05T17:18:42.929Z</updated>
+  <id>https://luojiego.com/</id>
+  
+  <author>
+    <name>罗杰</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>欢迎光临</title>
+    <link href="https://luojiego.com/2020/04/05/hello-world/"/>
+    <id>https://luojiego.com/2020/04/05/hello-world/</id>
+    <published>2020-04-05T17:18:42.933Z</published>
+    <updated>2020-04-05T17:18:42.929Z</updated>
+    
+    <content type="html"><![CDATA[<!-- build time:Mon Apr 06 2020 22:52:08 GMT+0000 (UTC) --><h2 id="感谢"><a class="markdownIt-Anchor" href="#感谢"></a> 感谢</h2><p><strong>茫茫人海，遇到即是缘分，希望在这里面，你能得到收获</strong></p><!-- rebuild by neat -->]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;!-- build time:Mon Apr 06 2020 22:52:08 GMT+0000 (UTC) --&gt;&lt;h2 id=&quot;感谢&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#感谢&quot;&gt;&lt;/a&gt; 感谢&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;茫茫人海，遇
+      
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+</feed>
