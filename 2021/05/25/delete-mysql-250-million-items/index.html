@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Roboto+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.luojiego.com","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="为什么会有 2.5 亿条数据运营需求，需要提供查询用户登录的记录。 我一思索，这简单呀，就设计了如下的数据表。 123456789desc login_record;+-------------+------------------+------+-----+-------------------+-------+| Field       | Type             | Null |">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何删除 MySQL 表中 2.5 亿条数据？">
+<meta property="og:url" content="http://www.luojiego.com/2021/05/25/delete-mysql-250-million-items/index.html">
+<meta property="og:site_name" content="Roger&#39;s Blog">
+<meta property="og:description" content="为什么会有 2.5 亿条数据运营需求，需要提供查询用户登录的记录。 我一思索，这简单呀，就设计了如下的数据表。 123456789desc login_record;+-------------+------------------+------+-----+-------------------+-------+| Field       | Type             | Null |">
+<meta property="og:locale">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/counts-more-than-250-millions.png">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/2021-05-25-rds-config.png">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/2021-05-25-rds-monitor.png">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%203.png">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%204.png">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%205.png">
+<meta property="og:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%206.png">
+<meta property="article:published_time" content="2021-05-25T13:57:32.000Z">
+<meta property="article:modified_time" content="2022-12-08T06:46:12.166Z">
+<meta property="article:author" content="罗杰">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/counts-more-than-250-millions.png">
+
+
+<link rel="canonical" href="http://www.luojiego.com/2021/05/25/delete-mysql-250-million-items/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-hans'
+  };
+</script><script src="/lib/fireworks.js"></script>
+<title>如何删除 MySQL 表中 2.5 亿条数据？ | Roger's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.0.0/style.css" />
+  <style>
+  body,div.post-body,h1,h2,h3,h4 {
+    font-family: sans-serif;
+    font-size: 108%;
+  }
+  </style>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Roger's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">动机至善 私心了无</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89-2-5-%E4%BA%BF%E6%9D%A1%E6%95%B0%E6%8D%AE"><span class="nav-number">1.</span> <span class="nav-text">为什么会有 2.5 亿条数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E8%A1%8C%E7%BB%B4%E6%8A%A4"><span class="nav-number">2.</span> <span class="nav-text">例行维护</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4"><span class="nav-number">3.</span> <span class="nav-text">如何删除</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-LIMIT"><span class="nav-number">3.1.</span> <span class="nav-text">用 LIMIT ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%97%B6%E9%97%B4%E5%88%A0%E9%99%A4%E5%8F%AF%E8%83%BD%E6%AF%94%E8%BE%83%E5%90%88%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">用时间删除可能比较合理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗杰</p>
+  <div class="site-description" itemprop="description">用博客记录自己的成长</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luojiego" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luojiego" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-hans">
+    <link itemprop="mainEntityOfPage" href="http://www.luojiego.com/2021/05/25/delete-mysql-250-million-items/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗杰">
+      <meta itemprop="description" content="用博客记录自己的成长">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Roger's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何删除 MySQL 表中 2.5 亿条数据？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-05-25 21:57:32" itemprop="dateCreated datePublished" datetime="2021-05-25T21:57:32+08:00">2021-05-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2022-12-08 14:46:12" itemprop="dateModified" datetime="2022-12-08T14:46:12+08:00">2022-12-08</time>
+      </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/05/25/delete-mysql-250-million-items/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/25/delete-mysql-250-million-items/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>2.9k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="为什么会有-2-5-亿条数据"><a href="#为什么会有-2-5-亿条数据" class="headerlink" title="为什么会有 2.5 亿条数据"></a>为什么会有 2.5 亿条数据</h1><p>运营需求，需要提供查询用户登录的记录。</p>
+<p>我一思索，这简单呀，就设计了如下的数据表。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">desc</span> login_record;</span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+------------------+------+-----+-------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Field       <span class="operator">|</span> Type             <span class="operator">|</span> <span class="keyword">Null</span> <span class="operator">|</span> Key <span class="operator">|</span> <span class="keyword">Default</span>           <span class="operator">|</span> Extra <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+------------------+------+-----+-------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> user_id     <span class="operator">|</span> <span class="type">int</span>(<span class="number">10</span>) unsigned <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> MUL <span class="operator">|</span> <span class="keyword">NULL</span>              <span class="operator">|</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> ip          <span class="operator">|</span> <span class="type">varchar</span>(<span class="number">40</span>)      <span class="operator">|</span> YES  <span class="operator">|</span>     <span class="operator">|</span>                   <span class="operator">|</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> device_mark <span class="operator">|</span> <span class="type">varchar</span>(<span class="number">500</span>)     <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span>     <span class="operator">|</span>                   <span class="operator">|</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="type">time</span>        <span class="operator">|</span> <span class="type">timestamp</span>        <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> MUL <span class="operator">|</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="operator">|</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+------------------+------+-----+-------------------+-------+</span></span><br></pre></td></tr></tbody></table></figure>
+<a id="more"></a>
+<p>由于 <code>user_id</code> 和 <code>time</code> 上都有索引，所以查询的速度很快。</p>
+<p>但是某一次我闲着没事，执行了个 <code>SELECT COUNT(*) FROM login_record</code> 发现很久都没有返回，我觉得事情可能比我想的要严重，这个表根据我的推测，可能数据过亿条了。</p>
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/counts-more-than-250-millions.png" alt="表中的总条目"></p>
+<h1 id="例行维护"><a href="#例行维护" class="headerlink" title="例行维护"></a>例行维护</h1><p>在知道这个表比较大之后，我的应对方案是将该表从 RDS 迁移到本地的数据库中。</p>
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/2021-05-25-rds-config.png" alt="RDS 的配置"></p>
+<p>本地的数据库使用的 EC2 机器比较渣，2 核 8 GB。</p>
+<p>反正停服之后搞，也不会影响用户。我们预计的停服时间是六个小时，停服一开始，在确定没有数据库写入之后，我的小伙伴就开始用 mysqldump 工具将 RDS 中的数据往本地导入了，因为在同个内网，我们猜测应该会比较快，顺便我们也看了一下 RDS 的监控。</p>
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/2021-05-25-rds-monitor.png" alt="14:17 分执行了 mysqldump 之后，RDS IOPS 监控"></p>
+<p>显然，<strong>RDS 的 IOPS 瞬间从 0 上升到了 2000</strong>，但是就下降了。但是 mysqldump 一直在执行，直到 15:30，我们实在没有办法等了，就停止掉了 mysqldump。此时查看本地数据库，发现<strong>才导入了 九千万记录</strong>。</p>
+<p>此时我们意识到，可能我们直接扔掉这个表可能会比较合适。</p>
+<p>那就先用本地的刚才导入的数据表试一下 drop，在我们执行了 drop 一小时之后，正常结束。</p>
+<p>这下我打消了在 RDS 上执行 drop 的想法，因为已经离停服开始过去了两个半小时，而且我们还有好多功能要进行测试。</p>
+<p>但是好消息是，我可以先删除掉 RDS 记录上的一部分数据，因为这个不会影响测试人员的正常工作。</p>
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%203.png" alt="删除 1.1 亿条数据，花费了这么长时间"></p>
+<p>但是即使我删除掉 1.1 亿条数据，也花费了两个小时。</p>
+<p>接着，我们放弃了立刻要在本地停服中删除掉这个数据表的想法，可以通过脚本慢慢删除这个数据表中的数据，毕竟这个表不会再写入。</p>
+<h1 id="如何删除"><a href="#如何删除" class="headerlink" title="如何删除"></a>如何删除</h1><h2 id="用-LIMIT"><a href="#用-LIMIT" class="headerlink" title="用 LIMIT ?"></a>用 LIMIT ?</h2><p>看看以下有趣的现象</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">explain <span class="keyword">select</span> user_id <span class="keyword">from</span> login_record limit <span class="number">10</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------------+--------------+-------+---------------+---------+---------+------+----------+-------------+</span></span><br><span class="line"><span class="operator">|</span> id   <span class="operator">|</span> select_type <span class="operator">|</span> <span class="keyword">table</span>        <span class="operator">|</span> type  <span class="operator">|</span> possible_keys <span class="operator">|</span> key     <span class="operator">|</span> key_len <span class="operator">|</span> <span class="keyword">ref</span>  <span class="operator">|</span> <span class="keyword">rows</span>     <span class="operator">|</span> Extra       <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------------+--------------+-------+---------------+---------+---------+------+----------+-------------+</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">1</span> <span class="operator">|</span> SIMPLE      <span class="operator">|</span> login_record <span class="operator">|</span> index <span class="operator">|</span> <span class="keyword">NULL</span>          <span class="operator">|</span> user_id <span class="operator">|</span> <span class="number">4</span>       <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span> <span class="number">12261955</span> <span class="operator">|</span> <span class="keyword">Using</span> index <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------------+--------------+-------+---------------+---------+---------+------+----------+-------------+</span></span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">explain <span class="keyword">select</span> user_id,<span class="type">time</span> <span class="keyword">from</span> login_record limit <span class="number">10</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------------+--------------+------+---------------+------+---------+------+----------+-------+</span></span><br><span class="line"><span class="operator">|</span> id   <span class="operator">|</span> select_type <span class="operator">|</span> <span class="keyword">table</span>        <span class="operator">|</span> type <span class="operator">|</span> possible_keys <span class="operator">|</span> key  <span class="operator">|</span> key_len <span class="operator">|</span> <span class="keyword">ref</span>  <span class="operator">|</span> <span class="keyword">rows</span>     <span class="operator">|</span> Extra <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------------+--------------+------+---------------+------+---------+------+----------+-------+</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">1</span> <span class="operator">|</span> SIMPLE      <span class="operator">|</span> login_record <span class="operator">|</span> <span class="keyword">ALL</span>  <span class="operator">|</span> <span class="keyword">NULL</span>          <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span> <span class="keyword">NULL</span>    <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span> <span class="number">12262319</span> <span class="operator">|</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------------+--------------+------+---------------+------+---------+------+----------+-------+</span></span><br></pre></td></tr></tbody></table></figure>
+<p>虽然 user_id 和 time 上都有索引，<strong>查询 user_id 或者 time 都会使用索引</strong>，但是如果<strong>一起查，不好意思，不能使用索引</strong>。</p>
+<p>这个仔细一想，很合理，因为该表 user_id 和 time 都是普通索引，如果两个要一起查，显然不能使用索引，所以要么根据 user_id 删除，要么根据时间删除。</p>
+<h2 id="用时间删除可能比较合理"><a href="#用时间删除可能比较合理" class="headerlink" title="用时间删除可能比较合理"></a>用时间删除可能比较合理</h2><p>线上总注册用户超过三百万，虽然可以使用 user_id 不停的删除也是个办法。</p>
+<p>但是我还是觉得使用时间来删除比较合适，于是我写个程序，按小时来删除数据。每次删除完之后，还执行睡眠一秒。</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 每次删除一个小时的日志</span></span><br><span class="line">  <span class="keyword">for</span> i := startTime; i &lt; endTime; {</span><br><span class="line">      start := time.Unix(<span class="keyword">int64</span>(i), <span class="number">0</span>).Format(layout)                                                                                              </span><br><span class="line">      i += <span class="number">1800</span></span><br><span class="line">      end := time.Unix(<span class="keyword">int64</span>(i), <span class="number">0</span>).Format(layout)</span><br><span class="line">		count, err := deleteRecord(start, end)</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">          <span class="built_in">panic</span>(err)</span><br><span class="line">      }</span><br><span class="line">      <span class="keyword">if</span> count == <span class="number">0</span> {</span><br><span class="line">          fmt.Println(<span class="string">"end time: "</span>, i)</span><br><span class="line">          <span class="keyword">break</span></span><br><span class="line">      }</span><br><span class="line">      fmt.Printf(<span class="string">"[%s-%s) delete count: %d\n"</span>, start, end, count)</span><br><span class="line"></span><br><span class="line">      time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">  }</span><br></pre></td></tr></tbody></table></figure>
+
+
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%204.png" alt="使用脚本删除时，IOPS 的变化"></p>
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%205.png" alt="使用脚本删除时，CPU 和内存使用率的变化"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在执行了大概两个多小时，删除了 1.5 亿条中的 90% 的日志。剩余的日志，我使用脚本导入到了本地数据库，让运营有数据可查。</p>
+<p>删除完 RDS 数据表中的数据之后，占用的存储空间不会下降，需要 drop 掉表之后，空间才能释放，我的需求也是不再使用这张表，所以就使用了 drop。</p>
+<p><img src="https://go-daily.oss-cn-chengdu.aliyuncs.com/img/Untitled%206.png" alt="drop 掉表之后，磁盘空间的释放"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/go/" rel="tag"># go</a>
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/17/filco-minila-air-experience/" rel="prev" title="Filco Minila Air 使用体验">
+                  <i class="fa fa-chevron-left"></i> Filco Minila Air 使用体验
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/10/16/divied-zero-panic/" rel="next" title="除 0 真的会 panic 吗？">
+                  除 0 真的会 panic 吗？ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗杰</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Symbols count total">81k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:14</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-www-luojiego-com.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://www.luojiego.com/2021/05/25/delete-mysql-250-million-items/";
+    this.page.identifier = "2021/05/25/delete-mysql-250-million-items/";
+    this.page.title = "如何删除 MySQL 表中 2.5 亿条数据？";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-www-luojiego-com.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Roboto+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.luojiego.com","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="2020 年时我想在手机上安装 ShadowRocket 以方便我的网络搜索，但是因为没有美区账号所以无法下载。网上提供的免费账号没有一个能使用的。当时看有人说可以自行注册，但当时也搜索到可以直接购买一个账号的网页，索性就直接购买了一个。购买了之后，一顿操作，把所有的信息都修改成了我自己的账号。但是还要付费 ShadowRocket 软件的费用，当时忘记怎么弄的了，总之这个美区账号的支付我一直没有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ultra PAYGO 实体卡折腾记录">
+<meta property="og:url" content="http://www.luojiego.com/2023/01/03/Ultra-PAYGO-Paypal-AppleId/index.html">
+<meta property="og:site_name" content="Roger&#39;s Blog">
+<meta property="og:description" content="2020 年时我想在手机上安装 ShadowRocket 以方便我的网络搜索，但是因为没有美区账号所以无法下载。网上提供的免费账号没有一个能使用的。当时看有人说可以自行注册，但当时也搜索到可以直接购买一个账号的网页，索性就直接购买了一个。购买了之后，一顿操作，把所有的信息都修改成了我自己的账号。但是还要付费 ShadowRocket 软件的费用，当时忘记怎么弄的了，总之这个美区账号的支付我一直没有">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-01-03T14:26:15.947Z">
+<meta property="article:modified_time" content="2023-01-03T14:24:51.594Z">
+<meta property="article:author" content="罗杰">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="AppleId">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.luojiego.com/2023/01/03/Ultra-PAYGO-Paypal-AppleId/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-hans'
+  };
+</script><script src="/lib/fireworks.js"></script>
+<title>Ultra PAYGO 实体卡折腾记录 | Roger's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.0.0/style.css" />
+  <style>
+  body,div.post-body,h1,h2,h3,h4 {
+    font-family: sans-serif;
+    font-size: 108%;
+  }
+  </style>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Roger's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">动机至善 私心了无</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Paygo-%E7%BE%8E%E5%9B%BD%E5%AE%9E%E4%BD%93%E5%8D%A1"><span class="nav-number">1.</span> <span class="nav-text">Paygo 美国实体卡</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C-Paypal"><span class="nav-number">2.</span> <span class="nav-text">注册 Paypal</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Apple-Id-%E7%BB%91%E5%AE%9A-Paypal-%E5%B9%B6%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">Apple Id 绑定 Paypal 并使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%86%85%E8%B4%AD%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">解决内购问题</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗杰</p>
+  <div class="site-description" itemprop="description">用博客记录自己的成长</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luojiego" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luojiego" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-hans">
+    <link itemprop="mainEntityOfPage" href="http://www.luojiego.com/2023/01/03/Ultra-PAYGO-Paypal-AppleId/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗杰">
+      <meta itemprop="description" content="用博客记录自己的成长">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Roger's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ultra PAYGO 实体卡折腾记录
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-01-03 22:26:15 / Modified: 22:24:51" itemprop="dateCreated datePublished" datetime="2023-01-03T22:26:15+08:00">2023-01-03</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2023/01/03/Ultra-PAYGO-Paypal-AppleId/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2023/01/03/Ultra-PAYGO-Paypal-AppleId/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>2 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>2020 年时我想在手机上安装 ShadowRocket 以方便我的网络搜索，但是因为没有美区账号所以无法下载。网上提供的免费账号没有一个能使用的。<br>当时看有人说可以自行注册，但当时也搜索到可以直接购买一个账号的网页，索性就直接购买了一个。购买了之后，一顿操作，把所有的信息都修改成了我自己的账号。但是还要付费 ShadowRocket 软件的费用，当时忘记怎么弄的了，总之这个美区账号的支付我一直没有搞，当时也担心账号安全问题。<br>然而两年都快要过去了，我发现有一个美区账号还是相当幸福的。毕竟国区因为游戏版号问题，如果要在手机上体验竞品还是非常麻烦的，安卓因为有模拟器，非常容易。但是手机端因为我一直使用的是 iPhone，国区因为版号问题根本就不可能有，所以切换成美区账号进行下载，再切换回来。<br>最近也看到一些关于 Apple TV 的视频，虽说国区不售卖，但是用美区账号可以正常使用，而且体验极好，虽然有想购买的打算，但是最终放弃了。主要是我根本没有时间看，其次呢，家里的电视品质也不高。<br>某天我看到大家说美区的 iCloud 如何如何好，但是想想自己当初毫无意识就将数据迁入到了中国区，以为速度能快一点，实际上并没有明显的感觉。有次我登录的是美区的账号，打开了 Apple Music，发现可以兑换 6 个月，但需要订阅，我信心满满的输入了我的招行信用卡信息，结果竟然告诉我绑定失败。此时我才明白，原来美区账号是不能使用中国的信用卡。好在苹果提供了 PayPal 的绑定，可是我也没有 PayPal 呀。<br>搜索一圈之后，发现可以使用 Paygo 美国的实体卡来注册 Paypal，就在淘宝上下单买了一张。</p>
+<a id="more"></a>
+
+<h1 id="Paygo-美国实体卡"><a href="#Paygo-美国实体卡" class="headerlink" title="Paygo 美国实体卡"></a>Paygo 美国实体卡</h1><p>关于激活手机卡的的一些相关链接<br><a target="_blank" rel="noopener" href="https://www.yuque.com/ultra-up97e/slbcp8/ez63g4">https://www.yuque.com/ultra-up97e/slbcp8/ez63g4</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/356929473">https://zhuanlan.zhihu.com/p/356929473</a><br><a target="_blank" rel="noopener" href="https://my.ultramobile.com/account/paygo">https://my.ultramobile.com/account/paygo</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/581929665">https://zhuanlan.zhihu.com/p/581929665</a></p>
+<h1 id="注册-Paypal"><a href="#注册-Paypal" class="headerlink" title="注册 Paypal"></a>注册 Paypal</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/281625672">https://zhuanlan.zhihu.com/p/281625672</a><br>注册没遇到问题，按照说明来就行，使用美国结点，启动全局代理，用 Chrome 的无痕模式，使用 whoer.net 检测网络环境，确保伪装至少在 70% 以上？（没有确认过），因为我全局代理 + 无痕之后测试出来的是 100%。<br>Win11 电脑设置：<br>      - 时区修改成 <code>(UTC - 8:00) Pacific Time (US &amp; Canada)</code><br>      - 语言修改成 <code>English(United States)</code><br>注册成功之后，成功绑定信用卡之后，微信 “招行银行信用卡” 提醒 “交易未成功，如有需要可重新支付”。<br>吃完中午饭，休息完，我尝试给 Logseq Sponsor 用 Paypal 成功付款 1$ 之后，信用卡成功捐款了。<br>确保可成功支付，就可以绑定到 Apple Id 了。</p>
+<h1 id="Apple-Id-绑定-Paypal-并使用"><a href="#Apple-Id-绑定-Paypal-并使用" class="headerlink" title="Apple Id 绑定 Paypal 并使用"></a>Apple Id 绑定 Paypal 并使用</h1><p>美区的 Apple Id 是去年嫌麻烦直接购买的，购买之后把全部的信息都修改成我的了。正常使用了一年。<br>在手机上也使用了在电脑上相同的美国区结点，ShadowRocket 使用了 “代理” 模式。<br>在 App Store 中退出登录现有了国区账号，输入美区账号，成功登录。<br>打开 Apple Music，提示兑换，然后按步骤进行，会提示添加绑定支付。<br>在手机上输入 Paypal 账号密码进行绑定，第一次我等了好久没有反应，尝试了第二次绑定成功。成功兑换了一个月的时间。（此处有个小插曲，我之前发现美区可兑换 6 个月，可能是因为我挂了全局的原因，兑换了一个月）。<br>在确定了能正常订阅之后，我反手就把订阅取消了，毕竟如果我忘记取消，被苹果白嫖 $10.99 是真的肉疼，毕竟可以抵 Paygo 三个月的月租了。（然后 Apple Music 就无法使用了，苹果也是真的无聊，订阅之后好像如果当天取消，就把送的时间给回收了，但是过几天好像不会，可以取消订阅，但是可以正常使用，国区的 Apple Music 我就是这样使用的）。<br>为了确保能正常捐款，我在 App Store 找了找，想购买个软件，但是瞅到几个买的挺挺贵，于是我直接给 App Store 充了 $1，在确定能正常充值之后，一切 OK。</p>
+<h1 id="解决内购问题"><a href="#解决内购问题" class="headerlink" title="解决内购问题"></a>解决内购问题</h1><p>说是解决，其实就是等。<br>之前一直没有在应用内进行过内购，最近正好迷上了 Toon Blast，只是因为通行证的奖励挺丰富的，尝试付费的时候，失败了，竟然提示这是另外一个 Apple Id 购买的。好吧，乖乖切回美区的账号，切了之后，依然不能付费。尝试下载了个付费游戏 Angry Birds，可以正常付费下载。但是游戏内购依然是失败。<br>在网上搜索了一下解决方案，有人说联系了客服支持，很快就解决了。有些人说，联系了之后，号就封了。也有些人说，等等再试一试。<br>这个问题让我很是头疼了两个小时，结果我再次尝试的时候，然后成功了。好吧，悬着的心终于放下了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/go/" rel="tag"># go</a>
+              <a href="/tags/AppleId/" rel="tag"># AppleId</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/12/23/my-font-settings/" rel="prev" title="我的常用软件字体设置">
+                  <i class="fa fa-chevron-left"></i> 我的常用软件字体设置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/01/13/2022-movie/" rel="next" title="2022 年我看过的电影">
+                  2022 年我看过的电影 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗杰</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Symbols count total">81k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:14</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-www-luojiego-com.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://www.luojiego.com/2023/01/03/Ultra-PAYGO-Paypal-AppleId/";
+    this.page.identifier = "2023/01/03/Ultra-PAYGO-Paypal-AppleId/";
+    this.page.title = "Ultra PAYGO 实体卡折腾记录";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-www-luojiego-com.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

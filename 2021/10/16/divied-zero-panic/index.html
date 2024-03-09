@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Roboto+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.luojiego.com","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="某天，小伙伴反馈说程序 panic 在一个比较诡异的地方，差不多是下面的代码。 123456789type Point struct {		X float32		Y float32}func Get(p Point) {		&#x2F;&#x2F; import github.com&#x2F;shopspring&#x2F;decimal		x, _ :&#x3D; decimal.NewFromFloat32(p.X).Round(7).Fl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="除 0 真的会 panic 吗？">
+<meta property="og:url" content="http://www.luojiego.com/2021/10/16/divied-zero-panic/index.html">
+<meta property="og:site_name" content="Roger&#39;s Blog">
+<meta property="og:description" content="某天，小伙伴反馈说程序 panic 在一个比较诡异的地方，差不多是下面的代码。 123456789type Point struct {		X float32		Y float32}func Get(p Point) {		&#x2F;&#x2F; import github.com&#x2F;shopspring&#x2F;decimal		x, _ :&#x3D; decimal.NewFromFloat32(p.X).Round(7).Fl">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-10-15T23:47:20.000Z">
+<meta property="article:modified_time" content="2021-10-15T23:49:07.443Z">
+<meta property="article:author" content="罗杰">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="golang">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.luojiego.com/2021/10/16/divied-zero-panic/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-hans'
+  };
+</script><script src="/lib/fireworks.js"></script>
+<title>除 0 真的会 panic 吗？ | Roger's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.0.0/style.css" />
+  <style>
+  body,div.post-body,h1,h2,h3,h4 {
+    font-family: sans-serif;
+    font-size: 108%;
+  }
+  </style>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Roger's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">动机至善 私心了无</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Rust"><span class="nav-number">1.</span> <span class="nav-text">Rust</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go"><span class="nav-number">2.</span> <span class="nav-text">Go</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C"><span class="nav-number">3.</span> <span class="nav-text">C</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-1"><span class="nav-number">4.</span> <span class="nav-text">C++</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#python-3-9"><span class="nav-number">5.1.</span> <span class="nav-text">python 3.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python-2-7"><span class="nav-number">5.2.</span> <span class="nav-text">python 2.7</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">6.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗杰</p>
+  <div class="site-description" itemprop="description">用博客记录自己的成长</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luojiego" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luojiego" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-hans">
+    <link itemprop="mainEntityOfPage" href="http://www.luojiego.com/2021/10/16/divied-zero-panic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗杰">
+      <meta itemprop="description" content="用博客记录自己的成长">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Roger's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          除 0 真的会 panic 吗？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-10-16 07:47:20 / Modified: 07:49:07" itemprop="dateCreated datePublished" datetime="2021-10-16T07:47:20+08:00">2021-10-16</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/10/16/divied-zero-panic/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/10/16/divied-zero-panic/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>5.2k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>5 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>某天，小伙伴反馈说程序 panic 在一个比较诡异的地方，差不多是下面的代码。</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Point <span class="keyword">struct</span> {</span><br><span class="line">		X <span class="keyword">float32</span></span><br><span class="line">		Y <span class="keyword">float32</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Get</span><span class="params">(p Point)</span></span> {</span><br><span class="line">		<span class="comment">// import github.com/shopspring/decimal</span></span><br><span class="line">		x, _ := decimal.NewFromFloat32(p.X).Round(<span class="number">7</span>).Float64()</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<a id="more"></a>
+
+<p>查看 decimal 的源码，下面是其注释，发现<strong>若 value 为 NaN 或者 +/- inf 时，会 panic</strong>。</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NewFromFloat32 converts a float32 to Decimal.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The converted number will contain the number of significant digits that can be</span></span><br><span class="line"><span class="comment">// represented in a float with reliable roundtrip.</span></span><br><span class="line"><span class="comment">// This is typically 6-8 digits depending on the input.</span></span><br><span class="line"><span class="comment">// See https://www.exploringbinary.com/decimal-precision-of-binary-floating-point-numbers/ for more information.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// For slightly faster conversion, use NewFromFloatWithExponent where you can specify the precision in absolute terms.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> this will panic on NaN, +/-inf</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFromFloat32</span><span class="params">(value <span class="keyword">float32</span>)</span> <span class="title">Decimal</span></span> {</span><br><span class="line">	<span class="keyword">if</span> value == <span class="number">0</span> {</span><br><span class="line">		<span class="keyword">return</span> New(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">	}</span><br><span class="line">	<span class="comment">// XOR is workaround for https://github.com/golang/go/issues/26285</span></span><br><span class="line">	a := math.Float32bits(value) ^ <span class="number">0x80808080</span></span><br><span class="line">	<span class="keyword">return</span> newFromFloat(<span class="keyword">float64</span>(value), <span class="keyword">uint64</span>(a)^<span class="number">0x80808080</span>, &amp;float32info)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>显然我们不可能传递一个非法的 <code>p</code>，在我们的认知里面，X 不应该有 NaN 这种数值，即使 p 没有初始化，那也应该不是 <strong>NaN</strong>。</p>
+<p>最终分析的结果是，X 有一个赋值操作，出现 <code>p.X = number / float32(a)</code>  ，而 a 有可能是 0，因为在我的认知里面，除法除 0 就会 panic，而不可能到调用 <strong><code>NewFromFloat32</code></strong> 时才出问题，最后发现一个惊人的事实：<strong>只有整数除 0 才会 panic，除以 0.0 并不会引发 panic，而会得到 NaN/+Inf/-Inf</strong>。 </p>
+<p>这让我突然有想研究各个语言在在除 0 以及 0.0 的想法了。</p>
+<p>关于浮点数除 0 为什么不会报错，此处是相关的<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12954193/why-does-division-by-zero-with-floating-point-or-double-precision-numbers-not">链接</a>。</p>
+<h2 id="Rust"><a href="#Rust" class="headerlink" title="Rust"></a>Rust</h2><p>浮点数相除的结果是<strong>注释掉编译错误</strong>之后得到的结果。</p>
+<p><code>rustc 1.55.0 (c8dfcfe04 2021-09-06)</code></p>
+<figure class="highlight rust"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() {</span><br><span class="line">    <span class="keyword">let</span> a = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> b = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, a/b); <span class="comment">// attempt to divide `0_i32` by zero</span></span><br><span class="line">    <span class="keyword">let</span> a = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">let</span> b = <span class="number">3</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, <span class="number">9</span>/(a-b)); <span class="comment">// attempt to divide `9_i32` by zero</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, <span class="number">0.0f64</span>/<span class="number">0f64</span>); <span class="comment">// NaN</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, <span class="number">0.1f64</span>/<span class="number">0f64</span>); <span class="comment">// inf</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, -<span class="number">0.1f64</span>/<span class="number">0f64</span>); <span class="comment">// -inf</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, <span class="number">0.0f32</span>/<span class="number">0f32</span>); <span class="comment">// NaN</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, <span class="number">0.1f32</span>/<span class="number">0f32</span>); <span class="comment">// inf</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, -<span class="number">0.1f32</span>/<span class="number">0f32</span>); <span class="comment">// -inf</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h2><p><code>go version go1.17 windows/amd64</code></p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> {</span><br><span class="line">	<span class="comment">// var a int32 = 3</span></span><br><span class="line">	<span class="comment">// var b int32 = 3</span></span><br><span class="line">	<span class="comment">// var c int32 = 9</span></span><br><span class="line">	<span class="comment">// println(c / (a - b)) // 运行出错 panic: runtime error: integer divide by zero</span></span><br><span class="line">	<span class="comment">// println(c / 0)       // 编译出错 division by zero</span></span><br><span class="line">	<span class="comment">// println(float64(0) / float64(0)) // 编译出错 division by zero</span></span><br><span class="line">	<span class="keyword">var</span> a <span class="keyword">float64</span> = <span class="number">0.0</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="keyword">float64</span>(<span class="number">0</span>) / a)    <span class="comment">// NaN</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="keyword">float64</span>(<span class="number">0.1</span>) / a)  <span class="comment">// +Inf</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="keyword">float64</span>(<span class="number">-0.1</span>) / a) <span class="comment">// -Inf</span></span><br><span class="line">	<span class="keyword">var</span> b <span class="keyword">float32</span> = <span class="number">0.0</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="keyword">float32</span>(<span class="number">0</span>) / b)    <span class="comment">// NaN</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="keyword">float32</span>(<span class="number">0.1</span>) / b)  <span class="comment">// +Inf</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="keyword">float32</span>(<span class="number">-0.1</span>) / b) <span class="comment">// -Inf</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="C"><a href="#C" class="headerlink" title="C"></a>C</h2><p><code>gcc version 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC)</code></p>
+<figure class="highlight c"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">	<span class="comment">// printf("%d\n", 0/0); // 编译警告 warning: division by zero [-Wdiv-by-zero]</span></span><br><span class="line">	<span class="keyword">int</span> a = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> b = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">// printf("%d\n", a/b); // 运行出错 Floating point exception</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%f\n"</span>, (<span class="keyword">float</span>)<span class="number">0</span>/(<span class="keyword">float</span>)<span class="number">0</span>); <span class="comment">// -nan</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%f\n"</span>, (<span class="keyword">float</span>)<span class="number">0.1</span>/(<span class="keyword">float</span>)<span class="number">0</span>); <span class="comment">// +inf</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%f\n"</span>, (<span class="keyword">float</span>)<span class="number">-0.1</span>/(<span class="keyword">float</span>)<span class="number">0</span>); <span class="comment">// -inf</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%f\n"</span>, (<span class="keyword">double</span>)<span class="number">0</span>/(<span class="keyword">double</span>)<span class="number">0</span>); <span class="comment">// -nan</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%f\n"</span>, (<span class="keyword">double</span>)<span class="number">0.1</span>/(<span class="keyword">double</span>)<span class="number">0</span>); <span class="comment">// +inf</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%f\n"</span>, (<span class="keyword">double</span>)<span class="number">-0.1</span>/(<span class="keyword">double</span>)<span class="number">0</span>); <span class="comment">// -inf</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="C-1"><a href="#C-1" class="headerlink" title="C++"></a>C++</h2><p><code>gcc version 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC)</code></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">	<span class="comment">// cout &lt;&lt; 0 / 0 &lt;&lt; endl; // 编译警告 warning: division by zero [-Wdiv-by-zero] 运行报错：Floating point exception</span></span><br><span class="line">	<span class="keyword">int</span> ia = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> ib = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">// cout &lt;&lt; ia / ib &lt;&lt; endl; // 运行出错：Floating point exception</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">float</span>(<span class="number">0</span>) / <span class="keyword">float</span>(<span class="number">0</span>) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// -nan</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">float</span>(<span class="number">0.1</span>) / <span class="keyword">float</span>(<span class="number">0</span>) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// +inf</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">float</span>(<span class="number">-0.1</span>) / <span class="keyword">float</span>(<span class="number">0</span>) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// -inf</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">double</span>(<span class="number">0</span>) / <span class="keyword">double</span>(<span class="number">0</span>) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// -nan</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">double</span>(<span class="number">0.1</span>) / <span class="keyword">double</span>(<span class="number">0</span>) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// +inf</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">double</span>(<span class="number">-0.1</span>) / <span class="keyword">double</span>(<span class="number">0</span>) &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// -inf</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h2><h3 id="python-3-9"><a href="#python-3-9" class="headerlink" title="python 3.9"></a>python 3.9</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Python 3.9.2 (tags/v3.9.2:1a79785, Feb 19 2021, 13:44:55) [MSC v.1928 64 bit (AMD64)] on win32</span><br><span class="line">Type <span class="string">"help"</span>, <span class="string">"copyright"</span>, <span class="string">"credits"</span> or <span class="string">"license"</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt; 0/0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: division by zero</span><br><span class="line">&gt;&gt;&gt; 0.1/0.0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">float</span> division by zero</span><br><span class="line">&gt;&gt;&gt; 0.0/0.0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">float</span> division by zero</span><br><span class="line">&gt;&gt;&gt; -0.1/0.0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">float</span> division by zero</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="python-2-7"><a href="#python-2-7" class="headerlink" title="python 2.7"></a>python 2.7</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[GCC 4.8.5 20150623 (Red Hat 4.8.5-39)] on linux2</span><br><span class="line">Type <span class="string">"help"</span>, <span class="string">"copyright"</span>, <span class="string">"credits"</span> or <span class="string">"license"</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt; 0/0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">integer</span> division or modulo by zero</span><br><span class="line">&gt;&gt;&gt; 0.1/0.0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">float</span> division by zero</span><br><span class="line">&gt;&gt;&gt; 0.0/0.0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">float</span> division by zero</span><br><span class="line">&gt;&gt;&gt; -0.1/0.0</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: <span class="built_in">float</span> division by zero</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p><strong>Python</strong> 的表现最好，无论是整数除 0 还是浮点除 0 都返回的错误：<strong>ZeroDivisionError</strong>。但跟编译型语言无法比较，因为无论如何，运行到的时候都挂了。</p>
+<p>编译报错的情况：<strong>Rust 整数除 0</strong>，不论是<strong>简直还是直接</strong>，<strong>代码均编译不过</strong>，Go 直接整数除 0 会编译不通过。但是直接除浮点数 0 时，不会报编译问题，但是 Go 能正常识别，编译不过。此处 Rust 和 Go 几乎五五开。</p>
+<p>C、C++ 直接除 0 编译器都会给出警告，但是可以运行，运行的时候报错。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/go/" rel="tag"># go</a>
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+              <a href="/tags/C/" rel="tag"># C</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/golang/" rel="tag"># golang</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/25/delete-mysql-250-million-items/" rel="prev" title="如何删除 MySQL 表中 2.5 亿条数据？">
+                  <i class="fa fa-chevron-left"></i> 如何删除 MySQL 表中 2.5 亿条数据？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/11/03/rust-install/" rel="next" title="Rust 超快安装方法">
+                  Rust 超快安装方法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗杰</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Symbols count total">81k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:14</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-www-luojiego-com.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://www.luojiego.com/2021/10/16/divied-zero-panic/";
+    this.page.identifier = "2021/10/16/divied-zero-panic/";
+    this.page.title = "除 0 真的会 panic 吗？";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-www-luojiego-com.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

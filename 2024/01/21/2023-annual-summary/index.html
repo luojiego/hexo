@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Roboto+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.luojiego.com","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="阅读阅读完的书籍 《代码大全 2》，实体书跟英语电子版完整的看了一遍。这本书算是一本程序员必读的书籍，但是真的是名字毁掉的是一本书。要我说这本书甚至可以翻译为程序员必读书籍 Top1。 《浪潮之颠》，大二就听过名字的一本书，但是没有看，一直拖到了今年。不过就是因为浪潮之颠，我要搜索中时候第一次听说了得到 App，这让我又新增了一个学习的渠道。 《别想太多啦》，一本相当短，但是却充满了智慧的书籍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023 年终总结">
+<meta property="og:url" content="http://www.luojiego.com/2024/01/21/2023-annual-summary/index.html">
+<meta property="og:site_name" content="Roger&#39;s Blog">
+<meta property="og:description" content="阅读阅读完的书籍 《代码大全 2》，实体书跟英语电子版完整的看了一遍。这本书算是一本程序员必读的书籍，但是真的是名字毁掉的是一本书。要我说这本书甚至可以翻译为程序员必读书籍 Top1。 《浪潮之颠》，大二就听过名字的一本书，但是没有看，一直拖到了今年。不过就是因为浪潮之颠，我要搜索中时候第一次听说了得到 App，这让我又新增了一个学习的渠道。 《别想太多啦》，一本相当短，但是却充满了智慧的书籍。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-01-21T04:17:34.000Z">
+<meta property="article:modified_time" content="2024-01-21T04:27:52.498Z">
+<meta property="article:author" content="罗杰">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="Annual Summary">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.luojiego.com/2024/01/21/2023-annual-summary/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-hans'
+  };
+</script><script src="/lib/fireworks.js"></script>
+<title>2023 年终总结 | Roger's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.0.0/style.css" />
+  <style>
+  body,div.post-body,h1,h2,h3,h4 {
+    font-family: sans-serif;
+    font-size: 108%;
+  }
+  </style>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Roger's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">动机至善 私心了无</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%85%E8%AF%BB"><span class="nav-number">1.</span> <span class="nav-text">阅读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E5%AE%8C%E7%9A%84%E4%B9%A6%E7%B1%8D"><span class="nav-number">1.1.</span> <span class="nav-text">阅读完的书籍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E5%AE%8C%E6%88%90"><span class="nav-number">1.2.</span> <span class="nav-text">未完成</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AC%E4%B9%A6"><span class="nav-number">2.</span> <span class="nav-text">听书</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E8%95%BE%E8%AE%B2%E7%BB%8F%E5%85%B8-%E6%A8%8A%E7%99%BB%E8%AF%BB%E4%B9%A6"><span class="nav-number">2.1.</span> <span class="nav-text">李蕾讲经典 + 樊登读书</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E5%90%AC%E4%B9%A6%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">微信听书：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8B%B1%E8%AF%AD"><span class="nav-number">3.</span> <span class="nav-text">英语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A8%B1%E4%B9%90"><span class="nav-number">4.</span> <span class="nav-text">娱乐</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E7%A8%8B"><span class="nav-number">5.</span> <span class="nav-text">编程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%85%E8%A1%8C"><span class="nav-number">6.</span> <span class="nav-text">旅行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%B6%E5%BA%AD"><span class="nav-number">7.</span> <span class="nav-text">家庭</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2023-%E6%80%BB%E7%BB%93%E4%B8%8E%E6%84%9F%E6%82%9F"><span class="nav-number">8.</span> <span class="nav-text">2023 总结与感悟</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2024-%E5%B9%B4%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">9.</span> <span class="nav-text">2024 年学习目标</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗杰</p>
+  <div class="site-description" itemprop="description">用博客记录自己的成长</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luojiego" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luojiego" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-hans">
+    <link itemprop="mainEntityOfPage" href="http://www.luojiego.com/2024/01/21/2023-annual-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗杰">
+      <meta itemprop="description" content="用博客记录自己的成长">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Roger's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2023 年终总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-01-21 12:17:34 / Modified: 12:27:52" itemprop="dateCreated datePublished" datetime="2024-01-21T12:17:34+08:00">2024-01-21</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2024/01/21/2023-annual-summary/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/01/21/2023-annual-summary/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>2.3k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>2 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="阅读"><a href="#阅读" class="headerlink" title="阅读"></a>阅读</h1><h2 id="阅读完的书籍"><a href="#阅读完的书籍" class="headerlink" title="阅读完的书籍"></a>阅读完的书籍</h2><ul>
+<li><strong>《代码大全 2》</strong>，实体书跟英语电子版完整的看了一遍。这本书算是一本程序员必读的书籍，但是真的是名字毁掉的是一本书。要我说这本书甚至可以翻译为程序员必读书籍 Top1。</li>
+<li><strong>《浪潮之颠》</strong>，大二就听过名字的一本书，但是没有看，一直拖到了今年。不过就是因为浪潮之颠，我要搜索中时候第一次听说了<strong>得到 App</strong>，这让我又新增了一个学习的渠道。</li>
+<li><strong>《别想太多啦》</strong>，一本相当短，但是却充满了智慧的书籍。</li>
+<li><strong>《夏洛的网》</strong>，一本看似是写给小朋友的书籍，却跟《小王子》一样值得人反复揣摩的书籍。</li>
+</ul>
+<h2 id="未完成"><a href="#未完成" class="headerlink" title="未完成"></a>未完成</h2><ul>
+<li>《如何阅读一本书》：50%</li>
+<li>《人生只有一件事》：20%</li>
+<li>《敏捷开发》：10%</li>
+<li>《性能之巅》：10%</li>
+<li>《悉达多》：20%<a id="more"></a>
+
+</li>
+</ul>
+<h1 id="听书"><a href="#听书" class="headerlink" title="听书"></a>听书</h1><h2 id="李蕾讲经典-樊登读书"><a href="#李蕾讲经典-樊登读书" class="headerlink" title="李蕾讲经典+樊登读书"></a>李蕾讲经典 + 樊登读书</h2><p>大约 100 本。时间约为 100 小时。李蕾讲经典给我带来了女性视角下的社会，让我对于女性的痛苦有了比较深刻的了解。</p>
+<h2 id="微信听书："><a href="#微信听书：" class="headerlink" title="微信听书："></a>微信听书：</h2><p><strong>《局外人》</strong>+<strong>《鼠疫》</strong>，时间约为 16 小时。《鼠疫》中的部分描写，像极了我们这两年的经历，好在我们痛苦的熬了过来。</p>
+<h1 id="英语"><a href="#英语" class="headerlink" title="英语"></a>英语</h1><ul>
+<li>大学英语四级词汇，2023-12-27 学完了所有单词，剩下的单词还在复习。学完所有单词总共花费了 598 天，学习时长 17550，平均每天近 30 分钟。相当于本年度花费了 180 小时在学习英语单词上面。</li>
+<li>效果还是相当明显的，电影台词中的九成及以上单词至少都见过，看英文的内容也不再那么排斥了。</li>
+<li>由于 <strong>Medium</strong> 上的内容大多质量还是跟书籍相差太大，并且过于碎片化。所以我停止了续费。</li>
+</ul>
+<h1 id="娱乐"><a href="#娱乐" class="headerlink" title="娱乐"></a>娱乐</h1><ul>
+<li>电影 + 电视剧：大约 200 小时，因为看了三部电视剧，所以时间比较长。</li>
+<li>电影我觉得《奥本海默》、《封神第一部：朝歌风云》、《满江红》、《保你平安》、《消失的她》比较不错。</li>
+<li>电视剧《狂飙》中的张颂文的演技真的绝了。</li>
+<li>B 站年终观看时间为 100 小时，可能只有 40% 左右是关于学习的。</li>
+<li>音乐方面前半年泡在 Youtube Music，后半年上了<strong>美区</strong> Apple One 的家庭车，泡在 Apple Music。今年我比较喜欢的音乐人是<strong>张国荣</strong>和<strong>黄小琥</strong>。</li>
+</ul>
+<h1 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h1><ul>
+<li>编程大约 800 小时，其中主要语言为 Go、C++。</li>
+<li>短暂学习过一段时间的 Swift、Unity 及 Cocos，想要了解一下客户端的这些东西。同时也学习了一段时间的 C#，也修改过客户端的一些代码。</li>
+<li>本来打算抽出时间再学习一下 Python，但到最后真没有时间。我的年度语言我一直以为会是 C# 或者 Go，但是没有想到，在最后一个月我写了比较多的 <strong>C++</strong> 代码，我突然意识到我之前还是因为偏见，或者说因为自己道行太浅，觉得 C++ 不好。在有了 <strong>Clean Code</strong> 和 <strong>Code Complete</strong> 的洗礼之后，我甚至觉得 C++ 在一些设计方面是好过 Go 语言的。</li>
+</ul>
+<h1 id="旅行"><a href="#旅行" class="headerlink" title="旅行"></a>旅行</h1><ul>
+<li>过年期间短暂回<strong>老家</strong>呆了几天，小宝未陪同。</li>
+<li>三月底一家去了<strong>北京</strong>玩了四天，再也不打算去北京了。</li>
+<li>七月我们一起回了一次<strong>老家</strong>，老家可真凉快，也很安静。老大先随我一起回来的。</li>
+<li>八月初跟媳妇和大宝一起去了<strong>太平森林公园</strong>，风景真好，多去去有山有水的地方，人的心也能更加安静下来。</li>
+<li>十一月底我们一家去了<strong>翠华山</strong>，说实话没有太平森林公园美，带着小宝也无法走太远的路。不过小宝对于我们坐过船，还带回来的小鸭子纪念品印象深刻。甚至因为他的不小心，从凳子摔下去了都念叨过两三次。</li>
+<li>十二月带老丈人和丈母娘去了<strong>兵马俑</strong>，因为我跟媳妇和大宝去过一次，当时小宝还在媳妇肚子里面，没有太多的感触。</li>
+</ul>
+<h1 id="家庭"><a href="#家庭" class="headerlink" title="家庭"></a>家庭</h1><ul>
+<li><strong>亲密关系</strong>更进一步，通过李蕾讲经典中的多位不同的女性视角，看到了女性的不容易，更加理解妻子。</li>
+<li><strong>亲子关系</strong>上对于大宝的耐心比较欠缺，陪伴的时间也有所下降，这个目前来看也是一个必然，孩子渐渐长大，跟我们的相处必然会变少。反倒是二宝越来越黏爸爸，看着他每天的成长，我的心里都是美滋滋的。</li>
+</ul>
+<h1 id="2023-总结与感悟"><a href="#2023-总结与感悟" class="headerlink" title="2023 总结与感悟"></a>2023 总结与感悟</h1><ul>
+<li>这一年我最大的变化是再也不怕技术问题了。主要是心态 + AI 辅助（<strong>ChatGPT + Copilot</strong>）。不再担心可能会发生的事情，对于发生的事情，能感知到自己的焦虑，能安静的应对。通过更加高频的使用 AI，让工作更加轻松一些，能抽到更多的时间在学习上面。</li>
+<li>同事关系我停止了 “劝” 别人，心态也比之前更加平和。</li>
+<li>但在表达上我还需要更多的研究，因为我的内心是相当善良的，但在表达上太过欠缺，导致说出去的话会对别人造成比较大的伤害。需要更加谨言慎行。</li>
+</ul>
+<h1 id="2024-年学习目标"><a href="#2024-年学习目标" class="headerlink" title="2024 年学习目标"></a>2024 年学习目标</h1><ul>
+<li>说到新年目标，在得到 App 上听《脱不花・怎样成为高效学习的人》的第二讲时，老师问了个问题：在接下来的一个月里面，你在得到 App 上想学的课程时，我陷入了深思。因为我对 2024 突然相当迷茫，我突然觉得我应该好好思考一下，2024 年我应该干什么了。</li>
+<li>经过几天思考，我觉得自己的学习方式还是比较低效，总结性的内容太少，而且复习的就更少。本年度在这个方面上需要更加努力。另外去年看到推上的一个观点说看电影其实也很浪费时间。我慢慢也觉察到这个问题，因为有太多烂片的存在，导致我浪费了比较多的时间。不过时间上的浪费不可能消除，有部分时间，我就是单纯的想要放松。</li>
+<li>新的一年，我需要读更多的书，至少五本实用书籍，三本小说，并且需要将每本书记录的笔记以及高亮的内容整理出来。听书方面，减少在微信听书上面听完整的一本书，因为效率会比较低下。除非是讲解类的，例如讲解《论语》，《道德经》一类的书籍。</li>
+<li>技术方面，依然精读三本技术书籍，代码方面开始研究十年前的源码，例如 Redis, Libev 等代码。</li>
+<li>英语方面，在四级词汇完全复习完之后，开始学习英语六级词汇。看一些只有英语字幕的电影，看一看英文版本的《The Little Prince》等。</li>
+<li>个人成长方面依然努力让自己的心灵变得更加平和，注意说话的方式。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/Annual-Summary/" rel="tag"># Annual Summary</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/18/2023-movie/" rel="prev" title="2023 - 影视娱乐">
+                  <i class="fa fa-chevron-left"></i> 2023 - 影视娱乐
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/02/03/Cognitive-Awakening-Reading-Notes/" rel="next" title="《认知觉醒》读书笔记">
+                  《认知觉醒》读书笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗杰</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Symbols count total">81k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:14</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-www-luojiego-com.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://www.luojiego.com/2024/01/21/2023-annual-summary/";
+    this.page.identifier = "2024/01/21/2023-annual-summary/";
+    this.page.title = "2023 年终总结";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-www-luojiego-com.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

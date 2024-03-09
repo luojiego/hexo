@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Roboto+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.luojiego.com","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="困惑有点小心动要研究一下 go-micro 的 broker，正好在研究 kafka，想找个 demo 尝试一下，但是真让人头大，并没有找到很容易上手的案例，于是自己码一篇来帮助有兴趣研究的朋友。 V2 版本代码在 https:&#x2F;&#x2F;github.com&#x2F;micro&#x2F;examples v2 版本下面的 broker&#x2F;main.go 中增加了一行代码 1_ &quot;github.com&#x2F;micro&#x2F;go-p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go-micro-broker-kafka-demo">
+<meta property="og:url" content="http://www.luojiego.com/2020/06/10/go-micro-broker-kafka-demo/index.html">
+<meta property="og:site_name" content="Roger&#39;s Blog">
+<meta property="og:description" content="困惑有点小心动要研究一下 go-micro 的 broker，正好在研究 kafka，想找个 demo 尝试一下，但是真让人头大，并没有找到很容易上手的案例，于是自己码一篇来帮助有兴趣研究的朋友。 V2 版本代码在 https:&#x2F;&#x2F;github.com&#x2F;micro&#x2F;examples v2 版本下面的 broker&#x2F;main.go 中增加了一行代码 1_ &quot;github.com&#x2F;micro&#x2F;go-p">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-06-10T00:13:33.000Z">
+<meta property="article:modified_time" content="2020-12-30T13:43:59.922Z">
+<meta property="article:author" content="罗杰">
+<meta property="article:tag" content="go-micro">
+<meta property="article:tag" content="kafka">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.luojiego.com/2020/06/10/go-micro-broker-kafka-demo/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-hans'
+  };
+</script><script src="/lib/fireworks.js"></script>
+<title>go-micro-broker-kafka-demo | Roger's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.0.0/style.css" />
+  <style>
+  body,div.post-body,h1,h2,h3,h4 {
+    font-family: sans-serif;
+    font-size: 108%;
+  }
+  </style>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Roger's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">动机至善 私心了无</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%B0%E6%83%91"><span class="nav-number">1.</span> <span class="nav-text">困惑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V2-%E7%89%88%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">V2 版本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">2.1.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V1-%E7%89%88%E6%9C%AC"><span class="nav-number">3.</span> <span class="nav-text">V1 版本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81-1"><span class="nav-number">3.1.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">5.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kafka-%E7%BB%93%E6%9E%9C%E6%9F%A5%E7%9C%8B"><span class="nav-number">6.</span> <span class="nav-text">kafka 结果查看</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#topic"><span class="nav-number">6.0.1.</span> <span class="nav-text">topic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#content"><span class="nav-number">6.0.2.</span> <span class="nav-text">content</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">7.</span> <span class="nav-text">问题</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗杰</p>
+  <div class="site-description" itemprop="description">用博客记录自己的成长</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luojiego" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luojiego" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-hans">
+    <link itemprop="mainEntityOfPage" href="http://www.luojiego.com/2020/06/10/go-micro-broker-kafka-demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗杰">
+      <meta itemprop="description" content="用博客记录自己的成长">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Roger's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          go-micro-broker-kafka-demo
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-06-10 08:13:33" itemprop="dateCreated datePublished" datetime="2020-06-10T08:13:33+08:00">2020-06-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-12-30 21:43:59" itemprop="dateModified" datetime="2020-12-30T21:43:59+08:00">2020-12-30</time>
+      </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/06/10/go-micro-broker-kafka-demo/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/06/10/go-micro-broker-kafka-demo/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="Symbols count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Symbols count in article: </span>
+      <span>6.7k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>6 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="困惑"><a href="#困惑" class="headerlink" title="困惑"></a>困惑</h1><p>有点小心动要研究一下 go-micro 的 broker，正好在研究 kafka，想找个 demo 尝试一下，但是真让人头大，并没有找到很容易上手的案例，于是自己码一篇来帮助有兴趣研究的朋友。</p>
+<h1 id="V2-版本"><a href="#V2-版本" class="headerlink" title="V2 版本"></a>V2 版本</h1><h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p><strong>在 <a target="_blank" rel="noopener" href="https://github.com/micro/examples">https://github.com/micro/examples</a> v2 版本下面的 broker/main.go 中增加了一行代码</strong></p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_ <span class="string">"github.com/micro/go-plugins/broker/kafka/v2"</span></span><br></pre></td></tr></tbody></table></figure>
+<a id="more"></a>
+<p>具体代码如下：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/micro/go-micro/v2/broker"</span></span><br><span class="line">	<span class="string">"github.com/micro/go-micro/v2/config/cmd"</span></span><br><span class="line">	_ <span class="string">"github.com/micro/go-plugins/broker/kafka/v2"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	topic = <span class="string">"go.micro.topic.foo"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">pub</span><span class="params">()</span></span> {</span><br><span class="line">	tick := time.NewTicker(time.Second)</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> _ = <span class="keyword">range</span> tick.C {</span><br><span class="line">		msg := &amp;broker.Message{</span><br><span class="line">			Header: <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>{</span><br><span class="line">				<span class="string">"id"</span>: fmt.Sprintf(<span class="string">"%d"</span>, i),</span><br><span class="line">			},</span><br><span class="line">			Body: []<span class="keyword">byte</span>(fmt.Sprintf(<span class="string">"%d: %s"</span>, i, time.Now().String())),</span><br><span class="line">		}</span><br><span class="line">		<span class="keyword">if</span> err := broker.Publish(topic, msg); err != <span class="literal">nil</span> {</span><br><span class="line">			log.Printf(<span class="string">"[pub] failed: %v"</span>, err)</span><br><span class="line">		} <span class="keyword">else</span> {</span><br><span class="line">			fmt.Println(<span class="string">"[pub] pubbed message:"</span>, <span class="keyword">string</span>(msg.Body))</span><br><span class="line">		}</span><br><span class="line">		i++</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sub</span><span class="params">()</span></span> {</span><br><span class="line">	_, err := broker.Subscribe(topic, <span class="function"><span class="keyword">func</span><span class="params">(p broker.Event)</span> <span class="title">error</span></span> {</span><br><span class="line">		fmt.Println(<span class="string">"[sub] received message:"</span>, <span class="keyword">string</span>(p.Message().Body), <span class="string">"header"</span>, p.Message().Header)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	})</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> {</span><br><span class="line">	cmd.Init()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := broker.Init(); err != <span class="literal">nil</span> {</span><br><span class="line">		log.Fatalf(<span class="string">"Broker Init error: %v"</span>, err)</span><br><span class="line">	}</span><br><span class="line">	<span class="keyword">if</span> err := broker.Connect(); err != <span class="literal">nil</span> {</span><br><span class="line">		log.Fatalf(<span class="string">"Broker Connect error: %v"</span>, err)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> pub()</span><br><span class="line">	<span class="keyword">go</span> sub()</span><br><span class="line"></span><br><span class="line">	&lt;-time.After(time.Second * <span class="number">10</span>)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="V1-版本"><a href="#V1-版本" class="headerlink" title="V1 版本"></a>V1 版本</h1><h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><p><strong>在 <a target="_blank" rel="noopener" href="https://github.com/micro/examples">https://github.com/micro/examples</a> v1 版本目录下面的 broker/main.go 中增加了一行代码</strong></p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_ <span class="string">"github.com/micro/go-plugins/broker/kafka"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>具体代码如下：</p>
+<figure class="highlight go"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/micro/go-micro/broker"</span></span><br><span class="line">	<span class="string">"github.com/micro/go-micro/config/cmd"</span></span><br><span class="line">	_ <span class="string">"github.com/micro/go-plugins/broker/kafka"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	topic = <span class="string">"go.micro.topic.foo"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">pub</span><span class="params">()</span></span> {</span><br><span class="line">	tick := time.NewTicker(time.Second)</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> _ = <span class="keyword">range</span> tick.C {</span><br><span class="line">		msg := &amp;broker.Message{</span><br><span class="line">			Header: <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>{</span><br><span class="line">				<span class="string">"id"</span>: fmt.Sprintf(<span class="string">"%d"</span>, i),</span><br><span class="line">			},</span><br><span class="line">			Body: []<span class="keyword">byte</span>(fmt.Sprintf(<span class="string">"%d: %s"</span>, i, time.Now().String())),</span><br><span class="line">		}</span><br><span class="line">		<span class="keyword">if</span> err := broker.Publish(topic, msg); err != <span class="literal">nil</span> {</span><br><span class="line">			log.Printf(<span class="string">"[pub] failed: %v"</span>, err)</span><br><span class="line">		} <span class="keyword">else</span> {</span><br><span class="line">			fmt.Println(<span class="string">"[pub] pubbed message:"</span>, <span class="keyword">string</span>(msg.Body))</span><br><span class="line">		}</span><br><span class="line">		i++</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sub</span><span class="params">()</span></span> {</span><br><span class="line">	_, err := broker.Subscribe(topic, <span class="function"><span class="keyword">func</span><span class="params">(p broker.Event)</span> <span class="title">error</span></span> {</span><br><span class="line">		fmt.Println(<span class="string">"[sub] received message:"</span>, <span class="keyword">string</span>(p.Message().Body), <span class="string">"header"</span>, p.Message().Header)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	})</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> {</span><br><span class="line">	cmd.Init()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := broker.Init(); err != <span class="literal">nil</span> {</span><br><span class="line">		log.Fatalf(<span class="string">"Broker Init error: %v"</span>, err)</span><br><span class="line">	}</span><br><span class="line">	<span class="keyword">if</span> err := broker.Connect(); err != <span class="literal">nil</span> {</span><br><span class="line">		log.Fatalf(<span class="string">"Broker Connect error: %v"</span>, err)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> pub()</span><br><span class="line">	<span class="keyword">go</span> sub()</span><br><span class="line"></span><br><span class="line">	&lt;-time.After(time.Second * <span class="number">10</span>)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p><strong>请使用你的 kafka 的地址</strong></p>
+<figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run main.go --broker=kafka --broker_address=192.168.0.111:9092</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[pub] pubbed message: 0: 2020-06-10 06:44:50.824034186 +0800 CST m=+1.011746054</span><br><span class="line">[sub] received message: 0: 2020-06-10 06:44:50.824034186 +0800 CST m=+1.011746054 header map[id:0]</span><br><span class="line">[pub] pubbed message: 1: 2020-06-10 06:44:51.824509526 +0800 CST m=+2.012221507</span><br><span class="line">[sub] received message: 1: 2020-06-10 06:44:51.824509526 +0800 CST m=+2.012221507 header map[id:1]</span><br><span class="line">[pub] pubbed message: 2: 2020-06-10 06:44:52.824126208 +0800 CST m=+3.011838083</span><br><span class="line">[sub] received message: 2: 2020-06-10 06:44:52.824126208 +0800 CST m=+3.011838083 header map[id:2]</span><br><span class="line">[pub] pubbed message: 3: 2020-06-10 06:44:53.824808121 +0800 CST m=+4.012520018</span><br><span class="line">[sub] received message: 3: 2020-06-10 06:44:53.824808121 +0800 CST m=+4.012520018 header map[id:3]</span><br><span class="line">[pub] pubbed message: 4: 2020-06-10 06:44:54.824376704 +0800 CST m=+5.012088806</span><br><span class="line">[sub] received message: 4: 2020-06-10 06:44:54.824376704 +0800 CST m=+5.012088806 header map[id:4]</span><br><span class="line">[pub] pubbed message: 5: 2020-06-10 06:44:55.824832097 +0800 CST m=+6.012544119</span><br><span class="line">[sub] received message: 5: 2020-06-10 06:44:55.824832097 +0800 CST m=+6.012544119 header map[id:5]</span><br><span class="line">[pub] pubbed message: 6: 2020-06-10 06:44:56.824383524 +0800 CST m=+7.012095620</span><br><span class="line">[sub] received message: 6: 2020-06-10 06:44:56.824383524 +0800 CST m=+7.012095620 header map[id:6]</span><br><span class="line">[pub] pubbed message: 7: 2020-06-10 06:44:57.824511069 +0800 CST m=+8.012222970</span><br><span class="line">[sub] received message: 7: 2020-06-10 06:44:57.824511069 +0800 CST m=+8.012222970 header map[id:7]</span><br><span class="line">[sub] received message: 8: 2020-06-10 06:44:58.824249742 +0800 CST m=+9.011961623 header map[id:8]</span><br><span class="line">[pub] pubbed message: 8: 2020-06-10 06:44:58.824249742 +0800 CST m=+9.011961623</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="kafka-结果查看"><a href="#kafka-结果查看" class="headerlink" title="kafka 结果查看"></a>kafka 结果查看</h1><h3 id="topic"><a href="#topic" class="headerlink" title="topic"></a>topic</h3><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ./kafka-topics.sh  --zookeeper localhost:2181 --list</span><br><span class="line">__consumer_offsets</span><br><span class="line">go.micro.topic.foo</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="content"><a href="#content" class="headerlink" title="content"></a>content</h3><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ ./kafka-console-consumer.sh --bootstrap-server 192.168.0.111:9092 --topic go.micro.topic.foo --from-beginning</span><br><span class="line">{"Header":{"id":"0"},"Body":"MDogMjAyMC0wNi0xMCAwNjozODowOS41MDM1MTE1MjggKzA4MDAgQ1NUIG09KzEuMDE0MDAzOTY3"}</span><br><span class="line">{"Header":{"id":"1"},"Body":"MTogMjAyMC0wNi0xMCAwNjozODoxMC41MDMxODM5ODUgKzA4MDAgQ1NUIG09KzIuMDEzNjc2Mzgw"}</span><br><span class="line">{"Header":{"id":"2"},"Body":"MjogMjAyMC0wNi0xMCAwNjozODoxMS41MDMyNTQgKzA4MDAgQ1NUIG09KzMuMDEzNzQ2NDM4"}</span><br><span class="line">{"Header":{"id":"3"},"Body":"MzogMjAyMC0wNi0xMCAwNjozODoxMi41MDM3Nzc4OTUgKzA4MDAgQ1NUIG09KzQuMDE0MjcwNDYy"}</span><br><span class="line">{"Header":{"id":"4"},"Body":"NDogMjAyMC0wNi0xMCAwNjozODoxMy41MDMyMjc2MjcgKzA4MDAgQ1NUIG09KzUuMDEzNzIwMDg2"}</span><br><span class="line">{"Header":{"id":"5"},"Body":"NTogMjAyMC0wNi0xMCAwNjozODoxNC41MDI4OTI0ODEgKzA4MDAgQ1NUIG09KzYuMDEzMzg0ODY4"}</span><br><span class="line">{"Header":{"id":"6"},"Body":"NjogMjAyMC0wNi0xMCAwNjozODoxNS41MDMyMzYyICswODAwIENTVCBtPSs3LjAxMzcyODc2OA=="}</span><br><span class="line">{"Header":{"id":"7"},"Body":"NzogMjAyMC0wNi0xMCAwNjozODoxNi41MDMzMzkyMTggKzA4MDAgQ1NUIG09KzguMDEzODMxNjM0"}</span><br><span class="line">{"Header":{"id":"8"},"Body":"ODogMjAyMC0wNi0xMCAwNjozODoxNy41MDMwNTc3NzggKzA4MDAgQ1NUIG09KzkuMDEzNTUwMzEw"}</span><br><span class="line">{"Header":{"id":"9"},"Body":"OTogMjAyMC0wNi0xMCAwNjozODoxOC41MDMyMjAxMzcgKzA4MDAgQ1NUIG09KzEwLjAxMzcxMjcwNQ=="}</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>v1 版本由于 kafka 会引入 <strong>github.com/DataDog/zstd</strong> 会导致程序无法在 Windows 下面运行，以上代码在 <strong>CentOS7</strong> 上运行正常</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/go-micro/" rel="tag"># go-micro</a>
+              <a href="/tags/kafka/" rel="tag"># kafka</a>
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/06/03/cpp-null/" rel="prev" title="C++ Mysql null 引发的血案">
+                  <i class="fa fa-chevron-left"></i> C++ Mysql null 引发的血案
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/06/27/mac-delete-container/" rel="next" title="Mac 重装之后，删除容器中的其它卷宗">
+                  Mac 重装之后，删除容器中的其它卷宗 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗杰</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Symbols count total">81k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:14</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-www-luojiego-com.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://www.luojiego.com/2020/06/10/go-micro-broker-kafka-demo/";
+    this.page.identifier = "2020/06/10/go-micro-broker-kafka-demo/";
+    this.page.title = "go-micro-broker-kafka-demo";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-www-luojiego-com.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
